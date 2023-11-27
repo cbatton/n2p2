@@ -140,10 +140,13 @@ void GradientDescent::setParametersAdam(double const eta,
 
 string GradientDescent::status(size_t epoch) const
 {
-    string s = strpr("%10zu %16.8E", epoch, eta);
-
-    if (type == DT_ADAM)
+    string s = strpr("%10zu", epoch);
+    if (type == DT_FIXED) {
+        s += strpr(" %16.8E", eta);
+    }
+    else if (type == DT_ADAM)
     {
+        s += strpr(" %16.8E", eta0);
         double meanm = 0.0;
         double meanv = 0.0;
         for (std::size_t i = 0; i < sizeState; ++i)
@@ -210,7 +213,7 @@ vector<string> GradientDescent::info() const
     {
         v.push_back(strpr("GradientDescentType::DT_ADAM (%d)\n", type));
         v.push_back(strpr("sizeState       = %zu\n", sizeState));
-        v.push_back(strpr("eta             = %12.4E\n", eta));
+        v.push_back(strpr("eta             = %12.4E\n", eta0));
         v.push_back(strpr("beta1           = %12.4E\n", beta1));
         v.push_back(strpr("beta2           = %12.4E\n", beta2));
         v.push_back(strpr("epsilon         = %12.4E\n", epsilon));

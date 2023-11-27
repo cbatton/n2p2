@@ -40,12 +40,12 @@ clean: clean-lammps-nnp
 ##############
 LAMMPS_DEBUG := $(filter-out -pedantic-errors,$(PROJECT_DEBUG))
 lammps-nnp:
-	if [ ! -e $(LAMMPS_VERSION).tar.gz ]; then \
-		wget https://github.com/lammps/lammps/archive/$(LAMMPS_VERSION).tar.gz; \
-	fi
-	tar -xzf $(LAMMPS_VERSION).tar.gz && mv lammps-$(LAMMPS_VERSION) lammps-nnp
-	ln -s $(PROJECT_DIR)/../../ lammps-nnp/lib/nnp
-	cp -r ./LAMMPS/src/USER-NNP lammps-nnp/src/
+	#if [ ! -e $(LAMMPS_VERSION).tar.gz ]; then \
+	#	wget https://github.com/lammps/lammps/archive/$(LAMMPS_VERSION).tar.gz; \
+	#fi
+	#tar -xzf $(LAMMPS_VERSION).tar.gz && mv lammps-$(LAMMPS_VERSION) lammps-nnp
+	#ln -s $(PROJECT_DIR)/../../ lammps-nnp/lib/nnp
+	#cp -r ./LAMMPS/src/USER-NNP lammps-nnp/src/
 	@sed -i.bak "s/^CC .*$$/CC      =       $(PROJECT_MPICC)/" lammps-nnp/src/MAKE/Makefile.mpi
 	@sed -i.bak "s/^CCFLAGS .*$$/CCFLAGS =       $(PROJECT_CFLAGS) $(PROJECT_CFLAGS_MPI)/" lammps-nnp/src/MAKE/Makefile.mpi
 	@sed -i.bak "s/^LINK .*$$/LINK =          $(PROJECT_MPICC)/" lammps-nnp/src/MAKE/Makefile.mpi

@@ -109,9 +109,6 @@ void GradientDescent::update()
             state[i] -= eta * m[i] / (sqrt(v[i]) + epsilon);
         }
 
-        // Update betas.
-        beta1t *= beta1;
-        beta2t *= beta2;
     }
 
     return;

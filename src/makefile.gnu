@@ -11,8 +11,8 @@ PROJECT_EIGEN=/usr/include/eigen3/
 ###############################################################################
 # COMPILERS AND FLAGS
 ###############################################################################
-PROJECT_CC=g++
-PROJECT_MPICC=mpic++
+PROJECT_CC=CC
+PROJECT_MPICC=CC
 # OpenMP parallelization is disabled by default, add flag "-fopenmp" to enable.
 PROJECT_CFLAGS=-O3 -march=native -std=c++11
 PROJECT_CFLAGS_MPI=-Wno-long-long
@@ -46,7 +46,7 @@ PROJECT_LDFLAGS_BLAS=-lblas -lgsl -lgslcblas
 #PROJECT_OPTIONS+= -DN2P2_FULL_SFD_MEMORY
 
 # Compile without MPI support.
-#PROJECT_OPTIONS+= -DN2P2_NO_MPI
+PROJECT_OPTIONS+= -DN2P2_NO_MPI
 
 # Use BLAS together with Eigen.
 PROJECT_OPTIONS+= -DEIGEN_USE_BLAS

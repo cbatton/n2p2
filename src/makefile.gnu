@@ -5,8 +5,8 @@
 ###############################################################################
 # Enter here paths to GSL or EIGEN if they are not in your standard include
 # path. DO NOT completely remove the entry, leave at least "./".
-PROJECT_GSL=./
-PROJECT_EIGEN=/usr/include/eigen3/
+PROJECT_GSL=/global/common/software/nersc/n9/gsl/2.7
+PROJECT_EIGEN=/global/common/software/nersc/pm-2022q4/spack/linux-sles15-zen3/eigen-3.4.0-bj2v3uo
 
 ###############################################################################
 # COMPILERS AND FLAGS
@@ -46,7 +46,7 @@ PROJECT_LDFLAGS_BLAS=-lblas -lgsl -lgslcblas
 #PROJECT_OPTIONS+= -DN2P2_FULL_SFD_MEMORY
 
 # Compile without MPI support.
-PROJECT_OPTIONS+= -DN2P2_NO_MPI
+#PROJECT_OPTIONS+= -DN2P2_NO_MPI
 
 # Use BLAS together with Eigen.
 PROJECT_OPTIONS+= -DEIGEN_USE_BLAS
@@ -58,4 +58,4 @@ PROJECT_OPTIONS+= -DEIGEN_USE_BLAS
 #PROJECT_OPTIONS+= -DEIGEN_USE_MKL_ALL
 
 # Disable Eigen multi threading.
-PROJECT_OPTIONS+= -DEIGEN_DONT_PARALLELIZE
+#PROJECT_OPTIONS+= -DEIGEN_DONT_PARALLELIZE

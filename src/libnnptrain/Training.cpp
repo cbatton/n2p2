@@ -3202,9 +3202,15 @@ void Training::randomizeNeuralNetworkWeights(string const& type)
     if (settings.keywordExists(keywordNW))
     {
         log << "Weights modified according to Nguyen Widrow scheme.\n";
+        int rank;
+        MPI_Comm_rank(comm, &rank);
+        if (rank == 0) {
+            remove("NguyenWidrow.txt"); 
+        }
         for (vector<Element>::iterator it = elements.begin();
              it != elements.end(); ++it)
         {
+            log << strpr(" Modifying Element %d per Nguyen-Widrow:\n", it->getAtomicNumber());
             NeuralNetwork& nn = it->neuralNetworks.at(type);
             nn.modifyConnections(NeuralNetwork::MS_NGUYENWIDROW);
         }

@@ -33,7 +33,7 @@ LIB=lib$(NAME)
 ###############################################################################
 # PROJECT COMPILER AND FLAGS
 ###############################################################################
-CC=$(PROJECT_CC)
+CC=$(PROJECT_MPICC)
 MPICC=$(PROJECT_MPICC)
 CFLAGS=$(PROJECT_CFLAGS)
 OPTIONS+=$(PROJECT_OPTIONS)

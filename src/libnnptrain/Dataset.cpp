@@ -949,6 +949,7 @@ size_t Dataset::prepareNumericForces(Structure& original, double delta)
 
 void Dataset::toNormalizedUnits()
 {
+    // Figure out how these critters are computed
     for (vector<Structure>::iterator it = structures.begin();
          it != structures.end(); ++it)
     {

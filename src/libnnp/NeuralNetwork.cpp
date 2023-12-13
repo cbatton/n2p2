@@ -21,6 +21,11 @@
 #include <cstdio>    // fprintf, stderr
 #include <cstdlib>   // exit, EXIT_FAILURE, rand, srand
 #include <limits>    // std::numeric_limits
+// Things to print to file
+#include <fstream>   // std::ofstream
+#include <string>    // std::string
+#include <vector>    // std::vector
+#include "mpi-extra.h"
 
 #define EXP_LIMIT 35.0
 
@@ -271,11 +276,30 @@ void NeuralNetwork::modifyConnections(ModificationScheme modificationScheme)
         double beta   = 0.0;
         double sum    = 0.0;
         double weight = 0.0;
+        // open file to dump to and append
+        // Get MPI rank
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        ofstream file;
+        if (rank == 0) {
+            file.open("NguyenWidrow.txt", ios::app);
+        }
 
         for (int i = 1; i < numLayers-1; i++)
         {
             beta = 0.7 * pow(layers[i].numNeurons,
                              1.0 / double(layers[i].numNeuronsPrevLayer));
+            if (rank == 0) {
+                file << "Layer " << i << " of " << numLayers << endl;
+                file << "beta = " << beta << endl;
+                file << "numNeurons = " << layers[i].numNeurons << endl;
+                file << "numNeuronsPrevLayer = " << layers[i].numNeuronsPrevLayer
+                     << endl;
+                if (layers[i].activationFunction == AF_TANH)
+                {
+                    file << "Tanh activation function" << endl;
+                }
+            }
             for (int j = 0; j < layers[i].numNeurons; j++)
             {
                 sum = 0.0;
@@ -285,6 +309,7 @@ void NeuralNetwork::modifyConnections(ModificationScheme modificationScheme)
                     sum += weight * weight;
                 }
                 sum = sqrt(sum);
+                file << j << " sum = " << sum << " bias " << layers[i].neurons[j].bias << endl;
                 for (int k = 0; k < layers[i].numNeuronsPrevLayer; k++)
                 {
                     layers[i].neurons[j].weights[k] *= beta / sum;
@@ -293,16 +318,27 @@ void NeuralNetwork::modifyConnections(ModificationScheme modificationScheme)
                         layers[i].neurons[j].weights[k] *= 2.0;
                     }
                 }
+                sum = 0.0;
+                for (int k = 0; k < layers[i].numNeuronsPrevLayer; k++)
+                {
+                    weight = layers[i].neurons[j].weights[k];
+                    sum += weight * weight;
+                }
+                sum = sqrt(sum);
                 layers[i].neurons[j].bias *= beta;
                 if (layers[i].activationFunction == AF_TANH)
                 {
                     layers[i].neurons[j].bias *= 2.0;
                 }
+                file << j << " after sum = " << sum << " bias " << layers[i].neurons[j].bias << endl;
             }
         }
-        for (int i = 0; i < outputLayer->numNeurons; i++)
+        for (int i = 0; i < outputLayer->numNeuronsPrevLayer; i++)
         {
+            double weight_before = outputLayer->neurons[0].weights[i];
             outputLayer->neurons[0].weights[i] *= 0.5;
+            file << i << " weight before = " << weight_before << " weight after = " << outputLayer->neurons[0].weights[i] << " numNeurons " << outputLayer->numNeurons << " numNeuronsPrevLayer " << outputLayer->numNeuronsPrevLayer << endl;
+            file << i << " bias " << outputLayer->neurons[0].bias << endl;
         }
     }
     else

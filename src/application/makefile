@@ -27,7 +27,7 @@ include $(PROJECT_DIR)/src/makefile.$(COMP)
 # PROJECT COMPILER AND FLAGS
 ###############################################################################
 # Include directories and linking flags are target specific (see below).
-CC=$(PROJECT_CC)
+CC=$(PROJECT_MPICC)
 MPICC=$(PROJECT_MPICC)
 CFLAGS=$(PROJECT_CFLAGS)
 OPTIONS+=$(PROJECT_OPTIONS)

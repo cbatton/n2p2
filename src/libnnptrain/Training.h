@@ -503,6 +503,10 @@ private:
     std::string              nnId;
     /// Training log file.
     std::ofstream            trainingLog;
+    /// string name for random loop
+    std::string              randomLoop;
+    /// File to log random update stuff too
+    std::ofstream            fileLoop;
     /// Update schedule epoch (false = energy update, true = force update).
     std::vector<int>         epochSchedule;
     /// Number of weights per updater.

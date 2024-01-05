@@ -1994,16 +1994,23 @@ void Training::checkSelectionMode()
 void Training::loop()
 {
     sw["loop"].start();
+    randomLoop = "UpdateLoop"+to_string(myRank)+".txt";
+    remove(randomLoop.c_str());
+    fileLoop.open(randomLoop.c_str(), ofstream::app);
     log << "\n";
     log << "*** TRAINING LOOP ***********************"
            "**************************************\n";
     log << "\n";
     printHeader();
 
+    fileLoop << "Initial errors\n";
+
     // Calculate initial RMSE and write comparison files.
     sw["error"].start();
     calculateErrorEpoch();
     sw["error"].stop();
+
+    fileLoop << "Initial values\n";
 
     // Write initial weights to files.
     if (myRank == 0) writeWeightsEpoch();
@@ -2027,6 +2034,8 @@ void Training::loop()
         sw["loop"].start();
 
         // Increment epoch counter.
+        fileLoop << "Epoch " << epoch << "\n";
+        fileLoop.flush();
         epoch++;
         log << "------\n";
 
@@ -2036,6 +2045,25 @@ void Training::loop()
         // Check if selection mode should be changed in this epoch.
         checkSelectionMode();
 
+        // Output property map
+        fileLoop << "Property map\n";
+        for (auto k : pk)
+        {
+            fileLoop << k << " " << p[k].selectionMode << "\n";
+            fileLoop << "numTrainPatterns " << p[k].numTrainPatterns << "\n";
+            fileLoop << "numTestPatterns " << p[k].numTestPatterns << "\n";
+            fileLoop << "taskBatchSize " << p[k].taskBatchSize << "\n";
+            fileLoop << "numUpdates " << p[k].numUpdates << "\n";
+            fileLoop << "patternsPerUpdate " << p[k].patternsPerUpdate << "\n";
+            fileLoop << "patternsPerUpdateGlobal " << p[k].patternsPerUpdateGlobal << "\n";
+            fileLoop << "epochFraction " << p[k].epochFraction << "\n";
+            fileLoop << "UpdateCandidates structure index " << p[k].updateCandidates[0].s << " " << p[k].updateCandidates.size() << "\n";
+            fileLoop << "UpdateCandidates atom index " << p[k].updateCandidates[0].a << " " << p[k].updateCandidates.size() << "\n";
+            fileLoop << "UpdateCandidates component index " << p[k].updateCandidates[0].c << " " << p[k].updateCandidates.size() << "\n";
+            fileLoop << "UpdateCandidates error " << p[k].updateCandidates[0].error << " " << p[k].updateCandidates.size() << "\n";
+        }
+        fileLoop.flush();
+
         // Sort or shuffle update candidates.
         for (auto k : pk)
         {
@@ -2043,8 +2071,35 @@ void Training::loop()
             else shuffleUpdateCandidates(k);
         }
 
+        fileLoop << "Property map after shuffle\n";
+        for (auto k : pk)
+        {
+            fileLoop << k << " " << p[k].selectionMode << "\n";
+            fileLoop << "numTrainPatterns " << p[k].numTrainPatterns << "\n";
+            fileLoop << "numTestPatterns " << p[k].numTestPatterns << "\n";
+            fileLoop << "taskBatchSize " << p[k].taskBatchSize << "\n";
+            fileLoop << "numUpdates " << p[k].numUpdates << "\n";
+            fileLoop << "patternsPerUpdate " << p[k].patternsPerUpdate << "\n";
+            fileLoop << "patternsPerUpdateGlobal " << p[k].patternsPerUpdateGlobal << "\n";
+            fileLoop << "epochFraction " << p[k].epochFraction << "\n";
+            fileLoop << "UpdateCandidates structure index " << p[k].updateCandidates[0].s << " " << p[k].updateCandidates.size() << "\n";
+            fileLoop << "UpdateCandidates atom index " << p[k].updateCandidates[0].a << " " << p[k].updateCandidates.size() << "\n";
+            fileLoop << "UpdateCandidates component index " << p[k].updateCandidates[0].c << " " << p[k].updateCandidates.size() << "\n";
+            fileLoop << "UpdateCandidates error " << p[k].updateCandidates[0].error << " " << p[k].updateCandidates.size() << "\n";
+        }
+        fileLoop.flush();
+
         // Determine epoch update schedule.
         setEpochSchedule();
+
+        fileLoop << "Epoch schedule\n";
+        for (auto i : epochSchedule)
+        {
+            string property = pk.at(i);
+            fileLoop << i << " " << property << "\t";
+        }
+        fileLoop << "\n";
+        fileLoop.flush();
 
         // Perform property updates according to schedule.
         sw["train"].start();
@@ -3202,9 +3257,7 @@ void Training::randomizeNeuralNetworkWeights(string const& type)
     if (settings.keywordExists(keywordNW))
     {
         log << "Weights modified according to Nguyen Widrow scheme.\n";
-        int rank;
-        MPI_Comm_rank(comm, &rank);
-        if (rank == 0) {
+        if (myRank == 0) {
             remove("NguyenWidrow.txt"); 
         }
         for (vector<Element>::iterator it = elements.begin();
